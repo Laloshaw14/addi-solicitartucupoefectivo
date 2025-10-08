@@ -1,0 +1,535 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Addi - Solicitar tu cupo en efectivo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7faff;
+    }
+
+    .top-bar {
+      background: #1976d2;
+      color: white;
+      text-align: center;
+      font-size: 14px;
+      padding: 6px;
+    }
+    .top-bar a {
+      color: #aef;
+      text-decoration: underline;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 277px;
+      background: #f7faff;
+      position: relative;
+    }
+
+    .navbar img {
+      height: 40px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #555;
+      font-size: 15px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 2px solid #1976d2;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #1976d2;
+    }
+
+    .btn-solid {
+      background: #1976d2;
+      color: white;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 10px 15px;
+      }
+
+      .navbar img {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .menu-toggle {
+        display: block;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      .buttons {
+        display: none;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        background: #f7faff;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        padding: 10px 0;
+        border-top: 1px solid #ddd;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+
+      .user-icon {
+        font-size: 22px;
+        cursor: pointer;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .menu-toggle,
+      .user-icon {
+        display: none;
+      }
+    }
+
+    .dynamic-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 85px 285px;
+      gap: 61px;
+    }
+
+    .dynamic-section img {
+      width: 580px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .text-content {
+      max-width: 500px;
+    }
+
+    .text-content h2 {
+      font-size: 38px;
+      margin-bottom: 20px;
+      color: #0a2540;
+    }
+
+    .text-content p {
+      font-size: 20px;
+      margin-bottom: 25px;
+      color: #333;
+      line-height: 1.5em;
+    }
+
+    .btn-big {
+      padding: 14px 26px;
+      border: none;
+      border-radius: 30px;
+      background: #1976d2;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .qr-section {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+    }
+
+    .qr-section h2 {
+      font-size: 32px;
+      color: #0a2540;
+      margin-bottom: 10px;
+    }
+
+    .qr-section p {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .qr-section img {
+      width: 180px;
+      margin-bottom: 15px;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      color: #0a2540;
+    }
+
+    .close-modal {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .dynamic-section {
+        flex-direction: column;
+        padding: 40px 20px;
+        text-align: center;
+      }
+      .dynamic-section img {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    Hemos actualizado nuestra Política de Tratamiento de Datos Personales. Te invitamos a leerla 
+    <a href="#">aquí</a>.
+  </div>
+
+  <nav class="navbar">
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <img src="img/logo.svg" alt="Addi Logo">
+    <div class="user-icon">⚪</div>
+    <div class="nav-links" id="navLinks">
+      <a href="#">Dónde comprar</a>
+      <a href="#">Descarga la app</a>
+      <a href="#">Cómo funciona</a>
+      <a href="#">Para comercios</a>
+      <a href="#">Nosotros</a>
+      <a href="#">Blog</a>
+      <a href="#">Ayuda</a>
+    </div>
+    <div class="buttons">
+      <button class="btn btn-outline">Pagar mi cuota</button>
+      <button class="btn btn-solid">Iniciar Sesión</button>
+    </div>
+  </nav>
+
+  <div class="dynamic-section" id="dynamicSection">
+    <div class="text-content" id="textBlock">
+      <h2><strong>Hoy regalas <span style='color:#4b7dff'>mañana pagas</span></strong></h2>
+      <p>Convierte tu cupo Addi en efectivo y paga cómodamente en cuotas. Ideal para regalos y necesidades del momento.</p>
+      <button class="btn-big">Hazlo ahora</button>
+    </div>
+    <img src="https://5471282.fs1.hubspotusercontent-na1.net/hub/5471282/hubfs/img-bg-banner-Jul-04-2023-04-43-06-0671-PM.png" alt="Imagen dinámica" id="imageBlock">
+  </div>
+
+  <div class="qr-section">
+    <h2>¡Convierte tu cupo en efectivo hoy mismo!</h2>
+    <p>Escanea este código QR y habla con un asesor. <br> Tu dinero puede liberarse en menos de <strong>24 horas</strong>.</p>
+    <img src="img/qr.png" alt="QR para asesor">
+    <p style="font-size: 16px; color: #1976d2;">Escanea y solicita tu efectivo con Addi</p>
+  </div>
+
+  <!-- Modal WhatsApp personalizado -->
+<div class="modal" id="customModal">
+  <div class="modal-content">
+    <img src="img/logo.svg" alt="Logo Addi" style="height: 50px; margin-bottom: 20px;">
+    <h3>¿Deseas hablar con un asesor?</h3>
+    <p style="font-size: 15px; color: #333; margin: 15px 0;">
+      Al continuar, aceptas nuestras <a href="#" style="color: #1976d2; text-decoration: underline;">Políticas de Tratamiento de Datos</a> y serás redirigido a WhatsApp para agilizar tu crédito.
+    </p>
+    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+      <a href="https://api.whatsapp.com/send?phone=573503282057&text=Hola%2C%20hacemos%20tu%20sue%C3%B1o%20realidad!%0AAhora%20puedes%20cambiar%20tu%20cupo%20Addi%20por%20dinero%20en%20efectivo%20a%20cualquier%20cuenta%20bancaria%2C%20Desembolso%2012%20a%2024%20horas%20!!!%0A" target="_blank" class="accept-policy-btn">Aceptar y hablar con un asesor</a>
+      <button class="close-modal">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .modal-content h3 {
+    color: #0a2540;
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+
+ .accept-policy-btn {
+    background-color: #25D366;
+    color: white;
+    text-decoration: none;
+    padding: 21px 13px;
+    border-radius: 30px;
+    font-weight: bold;
+    transition: background-color 0.3s 
+ease;
+}
+
+  .accept-policy-btn:hover {
+    background-color: #1ebe5d;
+  }
+
+  .close-modal {
+    background: transparent;
+    border: 2px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    color: #444;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  // Mostrar modal en cualquier botón
+  function showModal() {
+    document.getElementById("customModal").style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("customModal").style.display = "none";
+  }
+
+  document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", showModal);
+  });
+
+  document.querySelectorAll(".close-modal").forEach(btn => {
+    btn.addEventListener("click", closeModal);
+  });
+</script>
+
+<script>
+  function acceptAndRedirect() {
+    // Reemplaza con tu enlace de WhatsApp real
+    window.location.href = "https://api.whatsapp.com/send?phone=573503282057&text=Hola%2C%20hacemos%20tu%20sue%C3%B1o%20realidad!%0AAhora%20puedes%20cambiar%20tu%20cupo%20Addi%20por%20dinero%20en%20efectivo%20a%20cualquier%20cuenta%20bancaria%2C%20Desembolso%2012%20a%2024%20horas%20!!!%0A";
+  }
+</script>
+
+
+  <!-- FOOTER CAMPAÑA CON FONDO -->
+<div class="footer-campaign">
+  <div class="footer-overlay">
+    <h2>Ya son miles los que <span>convierten su cupo en efectivo</span></h2>
+    <p>Recibe el dinero en menos de <strong>24 horas</strong> y págalo en cómodas cuotas.</p>
+    <p class="footer-action">Contacta ya con nuestro equipo de asesores por WhatsApp:</p>
+    <a href="https://api.whatsapp.com/send?phone=573503282057&text=Hola%2C%20hacemos%20tu%20sue%C3%B1o%20realidad!%0AAhora%20puedes%20cambiar%20tu%20cupo%20Addi%20por%20dinero%20en%20efectivo%20a%20cualquier%20cuenta%20bancaria%2C%20Desembolso%2012%20a%2024%20horas%20!!!%0A" target="_blank" class="footer-whatsapp">+57 3503282057</a>
+  </div>
+</div>
+
+<style>
+  .footer-campaign {
+    background: url('https://5471282.fs1.hubspotusercontent-na1.net/hubfs/5471282/bg-contact-footer.png') no-repeat center;
+    background-size: cover;
+    padding: 60px 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .footer-overlay {
+    background: rgba(255, 255, 255, 0.8); /* Blanco translúcido */
+    padding: 50px 30px;
+    border-radius: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #111; /* Texto negro */
+  }
+
+  .footer-campaign h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #111;
+  }
+
+  .footer-campaign h2 span {
+    color: #4b7dff;
+  }
+
+  .footer-campaign p {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #111;
+  }
+
+  .footer-action {
+    margin-top: 30px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #111;
+  }
+
+  .footer-whatsapp {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 22px;
+    color: #ffffff;
+    background: #25D366;
+    padding: 12px 24px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+
+  .footer-whatsapp:hover {
+    background: #1ebc59;
+  }
+
+  @media (max-width: 768px) {
+    .footer-overlay {
+      padding: 30px 20px;
+    }
+
+    .footer-campaign h2 {
+      font-size: 24px;
+    }
+
+    .footer-campaign p,
+    .footer-action,
+    .footer-whatsapp {
+      font-size: 16px;
+    }
+
+    .footer-whatsapp {
+      padding: 10px 20px;
+    }
+  }
+</style>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("navLinks").classList.toggle("active");
+    }
+
+    const data = [
+      {
+        title: "<strong>Hoy regalas <span style='color:#4b7dff'>mañana pagas</span></strong>",
+        text: "Convierte tu cupo Addi en efectivo y paga cómodamente en cuotas. Ideal para regalos y necesidades del momento.",
+        img: "https://5471282.fs1.hubspotusercontent-na1.net/hub/5471282/hubfs/img-bg-banner-Jul-04-2023-04-43-06-0671-PM.png",
+        btn: "Hazlo ahora"
+      }
+    ];
+
+    let index = 0;
+    function changeContent() {
+      const textBlock = document.getElementById("textBlock");
+      const imageBlock = document.getElementById("imageBlock");
+
+      textBlock.innerHTML = `
+        <h2>${data[index].title}</h2>
+        <p>${data[index].text}</p>
+        <button class="btn-big">${data[index].btn}</button>
+      `;
+      imageBlock.src = data[index].img;
+
+      attachModalTriggers();
+      index = (index + 1) % data.length;
+    }
+
+    // Modal behavior
+    function showModal() {
+      document.getElementById("customModal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("customModal").style.display = "none";
+    }
+
+    function attachModalTriggers() {
+      const buttons = document.querySelectorAll("button");
+      buttons.forEach(btn => {
+        btn.onclick = showModal;
+      });
+    }
+
+    attachModalTriggers();
+    setInterval(changeContent, 6000);
+  </script>
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/68e59dd411d1b11954cbc563/1j70hhnlg';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+
+</body>
+</html>
